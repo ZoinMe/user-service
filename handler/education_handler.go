@@ -66,7 +66,7 @@ func (h *EducationHandler) UpdateEducation(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	updatedEducation.ID = uint(educationID)
+	updatedEducation.ID = int64(educationID)
 	education, err := h.educationService.UpdateEducation(c.Request.Context(), &updatedEducation)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

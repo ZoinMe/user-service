@@ -2,52 +2,98 @@ package repository
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 
 	"github.com/ZoinMe/user-service/model"
-	"github.com/jinzhu/gorm"
 )
 
 type EducationRepository struct {
-	DB *gorm.DB
+	DB *sql.DB
 }
 
-func NewEducationRepository(db *gorm.DB) *EducationRepository {
+func NewEducationRepository(db *sql.DB) *EducationRepository {
 	return &EducationRepository{DB: db}
 }
 
 func (er *EducationRepository) GetAllEducations(ctx context.Context) ([]*model.Education, error) {
-	var educations []*model.Education
-	if err := er.DB.Find(&educations).Error; err != nil {
+	query := "SELECT id, university_logo, university_name, degree, from_date, to_date, user_id FROM educations"
+	rows, err := er.DB.QueryContext(ctx, query)
+	if err != nil {
 		return nil, fmt.Errorf("failed to get all educations: %v", err)
 	}
+	defer rows.Close()
+
+	var educations []*model.Education
+	for rows.Next() {
+		var education model.Education
+		if err := rows.Scan(
+			&education.ID,
+			&education.UniversityLogo,
+			&education.UniversityName,
+			&education.Degree,
+			&education.FromDate,
+			&education.ToDate,
+			&education.UserID,
+		); err != nil {
+			return nil, fmt.Errorf("failed to scan education row: %v", err)
+		}
+		educations = append(educations, &education)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error reading education rows: %v", err)
+	}
+
 	return educations, nil
 }
 
 func (er *EducationRepository) GetEducationByID(ctx context.Context, id uint) (*model.Education, error) {
+	query := "SELECT id, university_logo, university_name, degree, from_date, to_date, user_id FROM educations WHERE id = ?"
+	row := er.DB.QueryRowContext(ctx, query, id)
+
 	var education model.Education
-	if err := er.DB.First(&education, id).Error; err != nil {
-		return nil, fmt.Errorf("failed to get education by ID: %v", err)
+	if err := row.Scan(
+		&education.ID,
+		&education.UniversityLogo,
+		&education.UniversityName,
+		&education.Degree,
+		&education.FromDate,
+		&education.ToDate,
+		&education.UserID,
+	); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, fmt.Errorf("education not found with ID %d", id)
+		}
+		return nil, fmt.Errorf("failed to scan education row: %v", err)
 	}
+
 	return &education, nil
 }
 
 func (er *EducationRepository) CreateEducation(ctx context.Context, education *model.Education) (*model.Education, error) {
-	if err := er.DB.Create(&education).Error; err != nil {
+	query := "INSERT INTO educations (university_logo, university_name, degree, from_date, to_date, user_id) VALUES (?, ?, ?, ?, ?, ?)"
+	result, err := er.DB.ExecContext(ctx, query, education.UniversityLogo, education.UniversityName, education.Degree, education.FromDate, education.ToDate, education.UserID)
+	if err != nil {
 		return nil, fmt.Errorf("failed to create education: %v", err)
 	}
+	education.ID, _ = result.LastInsertId()
 	return education, nil
 }
 
 func (er *EducationRepository) UpdateEducation(ctx context.Context, updatedEducation *model.Education) (*model.Education, error) {
-	if err := er.DB.Save(&updatedEducation).Error; err != nil {
+	query := "UPDATE educations SET university_logo = ?, university_name = ?, degree = ?, from_date = ?, to_date = ?, user_id = ? WHERE id = ?"
+	_, err := er.DB.ExecContext(ctx, query, updatedEducation.UniversityLogo, updatedEducation.UniversityName, updatedEducation.Degree, updatedEducation.FromDate, updatedEducation.ToDate, updatedEducation.UserID, updatedEducation.ID)
+	if err != nil {
 		return nil, fmt.Errorf("failed to update education: %v", err)
 	}
 	return updatedEducation, nil
 }
 
 func (er *EducationRepository) DeleteEducation(ctx context.Context, id uint) error {
-	if err := er.DB.Delete(&model.Education{}, id).Error; err != nil {
+	query := "DELETE FROM educations WHERE id = ?"
+	_, err := er.DB.ExecContext(ctx, query, id)
+	if err != nil {
 		return fmt.Errorf("failed to delete education: %v", err)
 	}
 	return nil

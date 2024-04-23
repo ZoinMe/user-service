@@ -66,7 +66,7 @@ func (h *SkillHandler) UpdateSkill(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	updatedSkill.ID = uint(skillID)
+	updatedSkill.ID = int64(skillID)
 	skill, err := h.skillService.UpdateSkill(c.Request.Context(), &updatedSkill)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

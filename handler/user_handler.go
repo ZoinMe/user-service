@@ -66,7 +66,7 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	updatedUser.ID = uint(userID)
+	updatedUser.ID = int64(userID)
 	user, err := h.userService.UpdateUser(c.Request.Context(), &updatedUser)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

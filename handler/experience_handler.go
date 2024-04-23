@@ -66,7 +66,7 @@ func (h *ExperienceHandler) UpdateExperience(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	updatedExperience.ID = uint(experienceID)
+	updatedExperience.ID = int64(experienceID)
 	experience, err := h.experienceService.UpdateExperience(c.Request.Context(), &updatedExperience)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

@@ -66,7 +66,7 @@ func (h *UserSocialMediaHandler) UpdateUserSocialMedia(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	updatedUserSocialMedia.ID = uint(userSocialMediaID)
+	updatedUserSocialMedia.ID = int64(userSocialMediaID)
 	userSocialMedia, err := h.userSocialMediaService.UpdateUserSocialMedia(c.Request.Context(), &updatedUserSocialMedia)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
