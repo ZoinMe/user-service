@@ -100,3 +100,36 @@ func (er *ExperienceRepository) DeleteExperience(ctx context.Context, id uint) e
 	}
 	return nil
 }
+
+func (er *ExperienceRepository) GetExperiencesByUserID(ctx context.Context, userID uint) ([]*model.Experience, error) {
+	query := "SELECT id, company_logo, designation, company, from_date, to_date, description, user_id FROM experiences WHERE user_id = ?"
+	rows, err := er.DB.QueryContext(ctx, query, userID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get experiences by user ID: %v", err)
+	}
+	defer rows.Close()
+
+	var experiences []*model.Experience
+	for rows.Next() {
+		var exp model.Experience
+		if err := rows.Scan(
+			&exp.ID,
+			&exp.CompanyLogo,
+			&exp.Designation,
+			&exp.Company,
+			&exp.FromDate,
+			&exp.ToDate,
+			&exp.Description,
+			&exp.UserID,
+		); err != nil {
+			return nil, fmt.Errorf("failed to scan experience row: %v", err)
+		}
+		experiences = append(experiences, &exp)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error reading experience rows: %v", err)
+	}
+
+	return experiences, nil
+}

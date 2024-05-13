@@ -27,17 +27,6 @@ type UserSkill struct {
 	SkillID int64 `json:"skill_id"`
 }
 
-type UserSocialMedia struct {
-	ID     int64  `json:"id"`
-	UserID int64  `json:"user_id"`
-	URL    string `json:"url"`
-}
-
-type SocialMedia struct {
-	ID   int64  `json:"id"`
-	Name string `json:"name"`
-}
-
 type Experience struct {
 	ID          int64     `json:"id"`
 	CompanyLogo string    `json:"company_logo"`

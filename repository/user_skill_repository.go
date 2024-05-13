@@ -88,3 +88,27 @@ func (usr *UserSkillRepository) DeleteUserSkill(ctx context.Context, id uint) er
 	}
 	return nil
 }
+
+func (usr *UserSkillRepository) GetUserSkillsByUserID(ctx context.Context, userID uint) ([]*model.UserSkill, error) {
+	query := "SELECT id, user_id, skill_id FROM user_skills WHERE user_id = ?"
+	rows, err := usr.DB.QueryContext(ctx, query, userID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get user skills by user ID: %v", err)
+	}
+	defer rows.Close()
+
+	var userSkills []*model.UserSkill
+	for rows.Next() {
+		var userSkill model.UserSkill
+		if err := rows.Scan(&userSkill.ID, &userSkill.UserID, &userSkill.SkillID); err != nil {
+			return nil, fmt.Errorf("failed to scan user skill row: %v", err)
+		}
+		userSkills = append(userSkills, &userSkill)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error reading user skill rows: %v", err)
+	}
+
+	return userSkills, nil
+}

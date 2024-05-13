@@ -98,3 +98,35 @@ func (er *EducationRepository) DeleteEducation(ctx context.Context, id uint) err
 	}
 	return nil
 }
+
+func (er *EducationRepository) GetEducationsByUserID(ctx context.Context, userID uint) ([]*model.Education, error) {
+	query := "SELECT id, university_logo, university_name, degree, from_date, to_date, user_id FROM educations WHERE user_id = ?"
+	rows, err := er.DB.QueryContext(ctx, query, userID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get educations by user ID: %v", err)
+	}
+	defer rows.Close()
+
+	var educations []*model.Education
+	for rows.Next() {
+		var edu model.Education
+		if err := rows.Scan(
+			&edu.ID,
+			&edu.UniversityLogo,
+			&edu.UniversityName,
+			&edu.Degree,
+			&edu.FromDate,
+			&edu.ToDate,
+			&edu.UserID,
+		); err != nil {
+			return nil, fmt.Errorf("failed to scan education row: %v", err)
+		}
+		educations = append(educations, &edu)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error reading education rows: %v", err)
+	}
+
+	return educations, nil
+}

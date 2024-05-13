@@ -55,3 +55,11 @@ func (uss *UserSkillService) DeleteUserSkill(ctx context.Context, id uint) error
 	}
 	return nil
 }
+
+func (uss *UserSkillService) GetUserSkillsByUserID(ctx context.Context, userID uint) ([]*model.UserSkill, error) {
+	userSkills, err := uss.userSkillRepository.GetUserSkillsByUserID(ctx, userID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get user skills by user ID: %v", err)
+	}
+	return userSkills, nil
+}
