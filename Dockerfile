@@ -8,7 +8,7 @@ WORKDIR /app
 COPY . .
 
 # Build the Go application
-RUN go build -o ./out/zoinme-user-services .
+RUN go build -o ./out/zoinme-user-service .
 
 # Final stage: Use a minimal base image to run the application
 FROM alpine:latest
