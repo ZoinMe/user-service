@@ -1,25 +1,25 @@
-package handler
+package userSkill
 
 import (
 	"fmt"
+	"github.com/ZoinMe/user-service/services"
 	"net/http"
 	"strconv"
 
 	"github.com/ZoinMe/user-service/model"
-	"github.com/ZoinMe/user-service/service"
 	"github.com/gin-gonic/gin"
 )
 
 type UserSkillHandler struct {
-	userSkillService *service.UserSkillService
+	userSkillService services.UserSkill
 }
 
-func NewUserSkillHandler(userSkillService *service.UserSkillService) *UserSkillHandler {
+func NewUserSkillHandler(userSkillService services.UserSkill) *UserSkillHandler {
 	return &UserSkillHandler{userSkillService}
 }
 
 func (h *UserSkillHandler) GetAllUserSkills(c *gin.Context) {
-	userSkills, err := h.userSkillService.GetAllUserSkills(c.Request.Context())
+	userSkills, err := h.userSkillService.Get(c.Request.Context())
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -35,7 +35,7 @@ func (h *UserSkillHandler) GetUserSkillByID(c *gin.Context) {
 		return
 	}
 
-	userSkill, err := h.userSkillService.GetUserSkillByID(c.Request.Context(), uint(userSkillID))
+	userSkill, err := h.userSkillService.GetByID(c.Request.Context(), uint(userSkillID))
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("User skill with ID %d not found", userSkillID)})
 		return
@@ -51,7 +51,7 @@ func (h *UserSkillHandler) CreateUserSkill(c *gin.Context) {
 		return
 	}
 
-	newUserSkill, err := h.userSkillService.CreateUserSkill(c.Request.Context(), &userSkill)
+	newUserSkill, err := h.userSkillService.Create(c.Request.Context(), &userSkill)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -76,7 +76,7 @@ func (h *UserSkillHandler) UpdateUserSkill(c *gin.Context) {
 
 	updatedUserSkill.ID = int64(userSkillID)
 
-	userSkill, err := h.userSkillService.UpdateUserSkill(c.Request.Context(), &updatedUserSkill)
+	userSkill, err := h.userSkillService.Update(c.Request.Context(), &updatedUserSkill)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -92,7 +92,7 @@ func (h *UserSkillHandler) DeleteUserSkill(c *gin.Context) {
 		return
 	}
 
-	err = h.userSkillService.DeleteUserSkill(c.Request.Context(), uint(userSkillID))
+	err = h.userSkillService.Delete(c.Request.Context(), uint(userSkillID))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -110,7 +110,7 @@ func (ush *UserSkillHandler) GetUserSkillsByUserID(c *gin.Context) {
 		return
 	}
 
-	userSkills, err := ush.userSkillService.GetUserSkillsByUserID(c.Request.Context(), uint(userID))
+	userSkills, err := ush.userSkillService.GetByUserID(c.Request.Context(), uint(userID))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

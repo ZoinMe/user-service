@@ -1,25 +1,25 @@
-package handler
+package user
 
 import (
 	"fmt"
+	"github.com/ZoinMe/user-service/services"
 	"net/http"
 	"strconv"
 
 	"github.com/ZoinMe/user-service/model"
-	"github.com/ZoinMe/user-service/service"
 	"github.com/gin-gonic/gin"
 )
 
 type UserHandler struct {
-	userService *service.UserService
+	userService services.User
 }
 
-func NewUserHandler(userService *service.UserService) *UserHandler {
+func NewUserHandler(userService services.User) *UserHandler {
 	return &UserHandler{userService}
 }
 
 func (h *UserHandler) GetUsers(c *gin.Context) {
-	users, err := h.userService.GetAllUsers(c.Request.Context())
+	users, err := h.userService.Get(c.Request.Context())
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -35,7 +35,7 @@ func (h *UserHandler) GetUserByID(c *gin.Context) {
 		return
 	}
 
-	user, err := h.userService.GetUserByID(c.Request.Context(), uint(userID))
+	user, err := h.userService.GetByID(c.Request.Context(), uint(userID))
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("User with ID %d not found", userID)})
 		return
@@ -51,7 +51,7 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 		return
 	}
 
-	newUser, err := h.userService.CreateUser(c.Request.Context(), &user)
+	newUser, err := h.userService.Create(c.Request.Context(), &user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -75,7 +75,7 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 
 	updatedUser.ID = int64(userID)
 
-	user, err := h.userService.UpdateUser(c.Request.Context(), &updatedUser)
+	user, err := h.userService.Update(c.Request.Context(), &updatedUser)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -91,7 +91,7 @@ func (h *UserHandler) DeleteUser(c *gin.Context) {
 		return
 	}
 
-	err = h.userService.DeleteUser(c.Request.Context(), uint(userID))
+	err = h.userService.Delete(c.Request.Context(), uint(userID))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

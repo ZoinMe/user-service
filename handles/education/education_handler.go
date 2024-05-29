@@ -1,25 +1,25 @@
-package handler
+package education
 
 import (
 	"fmt"
+	"github.com/ZoinMe/user-service/services"
 	"net/http"
 	"strconv"
 
 	"github.com/ZoinMe/user-service/model"
-	"github.com/ZoinMe/user-service/service"
 	"github.com/gin-gonic/gin"
 )
 
 type EducationHandler struct {
-	educationService *service.EducationService
+	educationService services.Education
 }
 
-func NewEducationHandler(educationService *service.EducationService) *EducationHandler {
+func NewEducationHandler(educationService services.Education) *EducationHandler {
 	return &EducationHandler{educationService}
 }
 
 func (h *EducationHandler) GetAllEducations(c *gin.Context) {
-	educations, err := h.educationService.GetAllEducations(c.Request.Context())
+	educations, err := h.educationService.Get(c.Request.Context())
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -35,7 +35,7 @@ func (h *EducationHandler) GetEducationByID(c *gin.Context) {
 		return
 	}
 
-	education, err := h.educationService.GetEducationByID(c.Request.Context(), uint(educationID))
+	education, err := h.educationService.GetByID(c.Request.Context(), uint(educationID))
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("Education with ID %d not found", educationID)})
 		return
@@ -52,7 +52,7 @@ func (h *EducationHandler) CreateEducation(c *gin.Context) {
 		return
 	}
 
-	newEducation, err := h.educationService.CreateEducation(c.Request.Context(), &education)
+	newEducation, err := h.educationService.Create(c.Request.Context(), &education)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -77,7 +77,7 @@ func (h *EducationHandler) UpdateEducation(c *gin.Context) {
 
 	updatedEducation.ID = int64(educationID)
 
-	education, err := h.educationService.UpdateEducation(c.Request.Context(), &updatedEducation)
+	education, err := h.educationService.Update(c.Request.Context(), &updatedEducation)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -93,7 +93,7 @@ func (h *EducationHandler) DeleteEducation(c *gin.Context) {
 		return
 	}
 
-	err = h.educationService.DeleteEducation(c.Request.Context(), uint(educationID))
+	err = h.educationService.Delete(c.Request.Context(), uint(educationID))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -111,7 +111,7 @@ func (eh *EducationHandler) GetEducationsByUserID(c *gin.Context) {
 		return
 	}
 
-	educations, err := eh.educationService.GetEducationsByUserID(c.Request.Context(), uint(userID))
+	educations, err := eh.educationService.GetByUserID(c.Request.Context(), uint(userID))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

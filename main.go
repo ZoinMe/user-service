@@ -2,20 +2,35 @@ package main
 
 import (
 	"database/sql"
+	education2 "github.com/ZoinMe/user-service/handles/education"
+	experience2 "github.com/ZoinMe/user-service/handles/experience"
+	skill2 "github.com/ZoinMe/user-service/handles/skill"
+	user2 "github.com/ZoinMe/user-service/handles/user"
+	userSkill2 "github.com/ZoinMe/user-service/handles/userSkill"
+	"github.com/ZoinMe/user-service/services/education"
+	"github.com/ZoinMe/user-service/services/experience"
+	"github.com/ZoinMe/user-service/services/skill"
+	"github.com/ZoinMe/user-service/services/user"
+	"github.com/ZoinMe/user-service/services/userSkill"
+	education3 "github.com/ZoinMe/user-service/stores/education"
+	experience3 "github.com/ZoinMe/user-service/stores/experience"
+	skill3 "github.com/ZoinMe/user-service/stores/skill"
+	user3 "github.com/ZoinMe/user-service/stores/user"
+	userSkill3 "github.com/ZoinMe/user-service/stores/userSkill"
 	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
-
-	"github.com/ZoinMe/user-service/handler"
-	"github.com/ZoinMe/user-service/repository"
-	"github.com/ZoinMe/user-service/service"
 )
 
 func main() {
 
-	db, _ := sql.Open("mysql", "root:ganesh123@tcp/zoinme?parseTime=true")
+	db, err := sql.Open("mysql", "root:password@tcp/zoinme?parseTime=true")
+	if err != nil {
+		log.Printf("Error while initializing database connection: %v", err)
+		return
+	}
 
 	defer db.Close()
 
@@ -23,25 +38,25 @@ func main() {
 	router := gin.Default()
 
 	// Initialize repositories
-	userRepo := repository.NewUserRepository(db)
-	skillRepo := repository.NewSkillRepository(db)
-	userSkillRepo := repository.NewUserSkillRepository(db)
-	experienceRepo := repository.NewExperienceRepository(db)
-	educationRepo := repository.NewEducationRepository(db)
+	userRepo := user3.NewUserRepository(db)
+	skillRepo := skill3.NewSkillRepository(db)
+	userSkillRepo := userSkill3.NewUserSkillRepository(db)
+	experienceRepo := experience3.NewExperienceRepository(db)
+	educationRepo := education3.NewEducationRepository(db)
 
 	// Initialize services
-	userService := service.NewUserService(userRepo)
-	skillService := service.NewSkillService(skillRepo)
-	userSkillService := service.NewUserSkillService(userSkillRepo)
-	experienceService := service.NewExperienceService(experienceRepo)
-	educationService := service.NewEducationService(educationRepo)
+	userService := user.NewUserService(userRepo)
+	skillService := skill.NewSkillService(skillRepo)
+	userSkillService := userSkill.NewUserSkillService(userSkillRepo)
+	experienceService := experience.NewExperienceService(experienceRepo)
+	educationService := education.NewEducationService(educationRepo)
 
 	// Initialize handlers
-	userHandler := handler.NewUserHandler(userService)
-	skillHandler := handler.NewSkillHandler(skillService)
-	userSkillHandler := handler.NewUserSkillHandler(userSkillService)
-	experienceHandler := handler.NewExperienceHandler(experienceService)
-	educationHandler := handler.NewEducationHandler(educationService)
+	userHandler := user2.NewUserHandler(userService)
+	skillHandler := skill2.NewSkillHandler(skillService)
+	userSkillHandler := userSkill2.NewUserSkillHandler(userSkillService)
+	experienceHandler := experience2.NewExperienceHandler(experienceService)
+	educationHandler := education2.NewEducationHandler(educationService)
 
 	// Define APIs for each entity
 	router.GET("/user", userHandler.GetUsers)

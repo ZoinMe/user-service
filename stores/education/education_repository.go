@@ -1,9 +1,10 @@
-package repository
+package education
 
 import (
 	"context"
 	"database/sql"
 	"fmt"
+	"github.com/ZoinMe/user-service/stores"
 
 	"github.com/ZoinMe/user-service/model"
 )
@@ -12,11 +13,11 @@ type EducationRepository struct {
 	DB *sql.DB
 }
 
-func NewEducationRepository(db *sql.DB) *EducationRepository {
+func NewEducationRepository(db *sql.DB) stores.Education {
 	return &EducationRepository{DB: db}
 }
 
-func (er *EducationRepository) GetAllEducations(ctx context.Context) ([]*model.Education, error) {
+func (er *EducationRepository) Get(ctx context.Context) ([]*model.Education, error) {
 	query := "SELECT id, university_logo, university_name, degree, from_date, to_date, user_id FROM educations"
 
 	rows, err := er.DB.QueryContext(ctx, query)
@@ -30,7 +31,7 @@ func (er *EducationRepository) GetAllEducations(ctx context.Context) ([]*model.E
 
 	for rows.Next() {
 		var education model.Education
-	
+
 		if err := rows.Scan(
 			&education.ID,
 			&education.UniversityLogo,
@@ -42,7 +43,7 @@ func (er *EducationRepository) GetAllEducations(ctx context.Context) ([]*model.E
 		); err != nil {
 			return nil, fmt.Errorf("failed to scan education row: %v", err)
 		}
-	
+
 		educations = append(educations, &education)
 	}
 
@@ -53,7 +54,7 @@ func (er *EducationRepository) GetAllEducations(ctx context.Context) ([]*model.E
 	return educations, nil
 }
 
-func (er *EducationRepository) GetEducationByID(ctx context.Context, id uint) (*model.Education, error) {
+func (er *EducationRepository) GetByID(ctx context.Context, id uint) (*model.Education, error) {
 	query := "SELECT id, university_logo, university_name, degree, from_date, to_date, user_id FROM educations WHERE id = ?"
 	row := er.DB.QueryRowContext(ctx, query, id)
 
@@ -77,7 +78,7 @@ func (er *EducationRepository) GetEducationByID(ctx context.Context, id uint) (*
 	return &education, nil
 }
 
-func (er *EducationRepository) CreateEducation(ctx context.Context, education *model.Education) (*model.Education, error) {
+func (er *EducationRepository) Create(ctx context.Context, education *model.Education) (*model.Education, error) {
 	query := "INSERT INTO educations (university_logo, university_name, degree, from_date, to_date, user_id) VALUES (?, ?, ?, ?, ?, ?)"
 
 	result, err := er.DB.ExecContext(ctx, query, education.UniversityLogo, education.UniversityName, education.Degree, education.FromDate, education.ToDate, education.UserID)
@@ -90,7 +91,7 @@ func (er *EducationRepository) CreateEducation(ctx context.Context, education *m
 	return education, nil
 }
 
-func (er *EducationRepository) UpdateEducation(ctx context.Context, updatedEducation *model.Education) (*model.Education, error) {
+func (er *EducationRepository) Update(ctx context.Context, updatedEducation *model.Education) (*model.Education, error) {
 	query := "UPDATE educations SET university_logo = ?, university_name = ?, degree = ?, from_date = ?, to_date = ?, user_id = ? WHERE id = ?"
 
 	_, err := er.DB.ExecContext(ctx, query, updatedEducation.UniversityLogo, updatedEducation.UniversityName, updatedEducation.Degree, updatedEducation.FromDate, updatedEducation.ToDate, updatedEducation.UserID, updatedEducation.ID)
@@ -101,7 +102,7 @@ func (er *EducationRepository) UpdateEducation(ctx context.Context, updatedEduca
 	return updatedEducation, nil
 }
 
-func (er *EducationRepository) DeleteEducation(ctx context.Context, id uint) error {
+func (er *EducationRepository) Delete(ctx context.Context, id uint) error {
 	query := "DELETE FROM educations WHERE id = ?"
 
 	_, err := er.DB.ExecContext(ctx, query, id)
@@ -112,7 +113,7 @@ func (er *EducationRepository) DeleteEducation(ctx context.Context, id uint) err
 	return nil
 }
 
-func (er *EducationRepository) GetEducationsByUserID(ctx context.Context, userID uint) ([]*model.Education, error) {
+func (er *EducationRepository) GetByUserID(ctx context.Context, userID uint) ([]*model.Education, error) {
 	query := "SELECT id, university_logo, university_name, degree, from_date, to_date, user_id FROM educations WHERE user_id = ?"
 
 	rows, err := er.DB.QueryContext(ctx, query, userID)
@@ -126,7 +127,7 @@ func (er *EducationRepository) GetEducationsByUserID(ctx context.Context, userID
 
 	for rows.Next() {
 		var edu model.Education
-	
+
 		if err := rows.Scan(
 			&edu.ID,
 			&edu.UniversityLogo,
@@ -138,7 +139,7 @@ func (er *EducationRepository) GetEducationsByUserID(ctx context.Context, userID
 		); err != nil {
 			return nil, fmt.Errorf("failed to scan education row: %v", err)
 		}
-	
+
 		educations = append(educations, &edu)
 	}
 

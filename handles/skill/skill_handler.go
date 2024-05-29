@@ -1,25 +1,25 @@
-package handler
+package skill
 
 import (
 	"fmt"
+	"github.com/ZoinMe/user-service/services"
 	"net/http"
 	"strconv"
 
 	"github.com/ZoinMe/user-service/model"
-	"github.com/ZoinMe/user-service/service"
 	"github.com/gin-gonic/gin"
 )
 
 type SkillHandler struct {
-	skillService *service.SkillService
+	skillService services.Skill
 }
 
-func NewSkillHandler(skillService *service.SkillService) *SkillHandler {
+func NewSkillHandler(skillService services.Skill) *SkillHandler {
 	return &SkillHandler{skillService}
 }
 
 func (h *SkillHandler) GetAllSkills(c *gin.Context) {
-	skills, err := h.skillService.GetAllSkills(c.Request.Context())
+	skills, err := h.skillService.Get(c.Request.Context())
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -35,7 +35,7 @@ func (h *SkillHandler) GetSkillByID(c *gin.Context) {
 		return
 	}
 
-	skill, err := h.skillService.GetSkillByID(c.Request.Context(), uint(skillID))
+	skill, err := h.skillService.GetByID(c.Request.Context(), uint(skillID))
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("Skill with ID %d not found", skillID)})
 		return
@@ -52,7 +52,7 @@ func (h *SkillHandler) CreateSkill(c *gin.Context) {
 		return
 	}
 
-	newSkill, err := h.skillService.CreateSkill(c.Request.Context(), &skill)
+	newSkill, err := h.skillService.Create(c.Request.Context(), &skill)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -77,7 +77,7 @@ func (h *SkillHandler) UpdateSkill(c *gin.Context) {
 
 	updatedSkill.ID = int64(skillID)
 
-	skill, err := h.skillService.UpdateSkill(c.Request.Context(), &updatedSkill)
+	skill, err := h.skillService.Update(c.Request.Context(), &updatedSkill)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -93,7 +93,7 @@ func (h *SkillHandler) DeleteSkill(c *gin.Context) {
 		return
 	}
 
-	err = h.skillService.DeleteSkill(c.Request.Context(), uint(skillID))
+	err = h.skillService.Delete(c.Request.Context(), uint(skillID))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
