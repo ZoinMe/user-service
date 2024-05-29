@@ -20,6 +20,7 @@ func (us *UserService) GetAllUsers(ctx context.Context) ([]*model.User, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to get all users: %v", err)
 	}
+
 	return users, nil
 }
 
@@ -28,6 +29,7 @@ func (us *UserService) GetUserByID(ctx context.Context, id uint) (*model.User, e
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user by ID: %v", err)
 	}
+
 	return user, nil
 }
 
@@ -36,6 +38,7 @@ func (us *UserService) CreateUser(ctx context.Context, user *model.User) (*model
 	if err != nil {
 		return nil, fmt.Errorf("failed to create user: %v", err)
 	}
+
 	return createdUser, nil
 }
 
@@ -44,6 +47,7 @@ func (us *UserService) UpdateUser(ctx context.Context, updatedUser *model.User) 
 	if err != nil {
 		return nil, fmt.Errorf("failed to update user: %v", err)
 	}
+
 	return updatedUser, nil
 }
 
@@ -52,5 +56,6 @@ func (us *UserService) DeleteUser(ctx context.Context, id uint) error {
 	if err != nil {
 		return fmt.Errorf("failed to delete user: %v", err)
 	}
+
 	return nil
 }

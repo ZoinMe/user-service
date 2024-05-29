@@ -21,6 +21,7 @@ func (uss *UserSkillService) GetAllUserSkills(ctx context.Context) ([]*model.Use
 	if err != nil {
 		return nil, fmt.Errorf("failed to get all user skills: %v", err)
 	}
+
 	return userSkills, nil
 }
 
@@ -29,6 +30,7 @@ func (uss *UserSkillService) GetUserSkillByID(ctx context.Context, id uint) (*mo
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user skill by ID: %v", err)
 	}
+
 	return userSkill, nil
 }
 
@@ -37,6 +39,7 @@ func (uss *UserSkillService) CreateUserSkill(ctx context.Context, userSkill *mod
 	if err != nil {
 		return nil, fmt.Errorf("failed to create user skill: %v", err)
 	}
+
 	return createdUserSkill, nil
 }
 
@@ -45,6 +48,7 @@ func (uss *UserSkillService) UpdateUserSkill(ctx context.Context, updatedUserSki
 	if err != nil {
 		return nil, fmt.Errorf("failed to update user skill: %v", err)
 	}
+
 	return updatedUserSkill, nil
 }
 
@@ -53,6 +57,7 @@ func (uss *UserSkillService) DeleteUserSkill(ctx context.Context, id uint) error
 	if err != nil {
 		return fmt.Errorf("failed to delete user skill: %v", err)
 	}
+
 	return nil
 }
 
@@ -61,5 +66,6 @@ func (uss *UserSkillService) GetUserSkillsByUserID(ctx context.Context, userID u
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user skills by user ID: %v", err)
 	}
+
 	return userSkills, nil
 }

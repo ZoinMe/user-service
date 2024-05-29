@@ -5,11 +5,12 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/gin-gonic/gin"
+	_ "github.com/go-sql-driver/mysql"
+
 	"github.com/ZoinMe/user-service/handler"
 	"github.com/ZoinMe/user-service/repository"
 	"github.com/ZoinMe/user-service/service"
-	"github.com/gin-gonic/gin"
-	_ "github.com/go-sql-driver/mysql"
 )
 
 func main() {
@@ -77,7 +78,9 @@ func main() {
 
 	// Start the server
 	port := ":8080"
+
 	log.Printf("Server started on port %s", port)
+
 	if err := http.ListenAndServe(port, router); err != nil {
 		log.Fatalf("failed to start server: %v", err)
 	}

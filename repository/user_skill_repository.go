@@ -18,15 +18,19 @@ func NewUserSkillRepository(db *sql.DB) *UserSkillRepository {
 
 func (usr *UserSkillRepository) GetAllUserSkills(ctx context.Context) ([]*model.UserSkill, error) {
 	query := "SELECT id, user_id, skill_id FROM user_skills"
+
 	rows, err := usr.DB.QueryContext(ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get all user skills: %v", err)
 	}
+
 	defer rows.Close()
 
 	var userSkills []*model.UserSkill
+
 	for rows.Next() {
 		var userSkill model.UserSkill
+	
 		if err := rows.Scan(
 			&userSkill.ID,
 			&userSkill.UserID,
@@ -34,6 +38,7 @@ func (usr *UserSkillRepository) GetAllUserSkills(ctx context.Context) ([]*model.
 		); err != nil {
 			return nil, fmt.Errorf("failed to scan user skill row: %v", err)
 		}
+	
 		userSkills = append(userSkills, &userSkill)
 	}
 
@@ -49,6 +54,7 @@ func (usr *UserSkillRepository) GetUserSkillByID(ctx context.Context, id uint) (
 	row := usr.DB.QueryRowContext(ctx, query, id)
 
 	var userSkill model.UserSkill
+
 	if err := row.Scan(
 		&userSkill.ID,
 		&userSkill.UserID,
@@ -62,47 +68,59 @@ func (usr *UserSkillRepository) GetUserSkillByID(ctx context.Context, id uint) (
 
 func (usr *UserSkillRepository) CreateUserSkill(ctx context.Context, userSkill *model.UserSkill) (*model.UserSkill, error) {
 	query := "INSERT INTO user_skills (user_id, skill_id) VALUES (?, ?)"
+
 	result, err := usr.DB.ExecContext(ctx, query, userSkill.UserID, userSkill.SkillID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create user skill: %v", err)
 	}
+
 	userSkillID, _ := result.LastInsertId()
 	userSkill.ID = userSkillID
+
 	return userSkill, nil
 }
 
 func (usr *UserSkillRepository) UpdateUserSkill(ctx context.Context, updatedUserSkill *model.UserSkill) (*model.UserSkill, error) {
 	query := "UPDATE user_skills SET user_id=?, skill_id=? WHERE id=?"
+
 	_, err := usr.DB.ExecContext(ctx, query, updatedUserSkill.UserID, updatedUserSkill.SkillID, updatedUserSkill.ID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to update user skill: %v", err)
 	}
+
 	return updatedUserSkill, nil
 }
 
 func (usr *UserSkillRepository) DeleteUserSkill(ctx context.Context, id uint) error {
 	query := "DELETE FROM user_skills WHERE id = ?"
+
 	_, err := usr.DB.ExecContext(ctx, query, id)
 	if err != nil {
 		return fmt.Errorf("failed to delete user skill: %v", err)
 	}
+
 	return nil
 }
 
 func (usr *UserSkillRepository) GetUserSkillsByUserID(ctx context.Context, userID uint) ([]*model.UserSkill, error) {
 	query := "SELECT id, user_id, skill_id FROM user_skills WHERE user_id = ?"
+
 	rows, err := usr.DB.QueryContext(ctx, query, userID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user skills by user ID: %v", err)
 	}
+
 	defer rows.Close()
 
 	var userSkills []*model.UserSkill
+
 	for rows.Next() {
 		var userSkill model.UserSkill
+	
 		if err := rows.Scan(&userSkill.ID, &userSkill.UserID, &userSkill.SkillID); err != nil {
 			return nil, fmt.Errorf("failed to scan user skill row: %v", err)
 		}
+	
 		userSkills = append(userSkills, &userSkill)
 	}
 

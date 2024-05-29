@@ -21,6 +21,7 @@ func (es *ExperienceService) GetAllExperiences(ctx context.Context) ([]*model.Ex
 	if err != nil {
 		return nil, fmt.Errorf("failed to get all experiences: %v", err)
 	}
+
 	return experiences, nil
 }
 
@@ -29,6 +30,7 @@ func (es *ExperienceService) GetExperienceByID(ctx context.Context, id uint) (*m
 	if err != nil {
 		return nil, fmt.Errorf("failed to get experience by ID: %v", err)
 	}
+
 	return experience, nil
 }
 
@@ -37,6 +39,7 @@ func (es *ExperienceService) CreateExperience(ctx context.Context, experience *m
 	if err != nil {
 		return nil, fmt.Errorf("failed to create experience: %v", err)
 	}
+
 	return createdExperience, nil
 }
 
@@ -45,6 +48,7 @@ func (es *ExperienceService) UpdateExperience(ctx context.Context, updatedExperi
 	if err != nil {
 		return nil, fmt.Errorf("failed to update experience: %v", err)
 	}
+
 	return updatedExperience, nil
 }
 
@@ -53,6 +57,7 @@ func (es *ExperienceService) DeleteExperience(ctx context.Context, id uint) erro
 	if err != nil {
 		return fmt.Errorf("failed to delete experience: %v", err)
 	}
+
 	return nil
 }
 
@@ -61,5 +66,6 @@ func (es *ExperienceService) GetExperiencesByUserID(ctx context.Context, userID 
 	if err != nil {
 		return nil, fmt.Errorf("failed to get experiences by user ID: %v", err)
 	}
+
 	return experiences, nil
 }

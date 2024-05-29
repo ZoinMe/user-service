@@ -21,6 +21,7 @@ func (ss *SkillService) GetAllSkills(ctx context.Context) ([]*model.Skill, error
 	if err != nil {
 		return nil, fmt.Errorf("failed to get all skills: %v", err)
 	}
+
 	return skills, nil
 }
 
@@ -29,6 +30,7 @@ func (ss *SkillService) GetSkillByID(ctx context.Context, id uint) (*model.Skill
 	if err != nil {
 		return nil, fmt.Errorf("failed to get skill by ID: %v", err)
 	}
+
 	return skill, nil
 }
 
@@ -37,6 +39,7 @@ func (ss *SkillService) CreateSkill(ctx context.Context, skill *model.Skill) (*m
 	if err != nil {
 		return nil, fmt.Errorf("failed to create skill: %v", err)
 	}
+
 	return createdSkill, nil
 }
 
@@ -45,6 +48,7 @@ func (ss *SkillService) UpdateSkill(ctx context.Context, updatedSkill *model.Ski
 	if err != nil {
 		return nil, fmt.Errorf("failed to update skill: %v", err)
 	}
+
 	return updatedSkill, nil
 }
 
@@ -53,5 +57,6 @@ func (ss *SkillService) DeleteSkill(ctx context.Context, id uint) error {
 	if err != nil {
 		return fmt.Errorf("failed to delete skill: %v", err)
 	}
+
 	return nil
 }
