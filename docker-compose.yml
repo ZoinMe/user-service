@@ -2,6 +2,7 @@ version: '3'
 
 services:
   web:
+    container_name: user-service
     build:
       context: .
       dockerfile: Dockerfile
