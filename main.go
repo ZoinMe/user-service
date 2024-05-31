@@ -2,6 +2,11 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
+	"log"
+	"net/http"
+	"os"
+
 	education2 "github.com/ZoinMe/user-service/handles/education"
 	experience2 "github.com/ZoinMe/user-service/handles/experience"
 	skill2 "github.com/ZoinMe/user-service/handles/skill"
@@ -17,8 +22,7 @@ import (
 	skill3 "github.com/ZoinMe/user-service/stores/skill"
 	user3 "github.com/ZoinMe/user-service/stores/user"
 	userSkill3 "github.com/ZoinMe/user-service/stores/userSkill"
-	"log"
-	"net/http"
+	"github.com/joho/godotenv"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
@@ -26,10 +30,23 @@ import (
 
 func main() {
 
-	db, err := sql.Open("mysql", "root:password@tcp/zoinme?parseTime=true")
+	err := godotenv.Load()
 	if err != nil {
-		log.Printf("Error while initializing database connection: %v", err)
-		return
+		log.Fatalf("Error loading .env file")
+	}
+
+	// Get environment variables
+	dbuser := os.Getenv("DB_USER_AIVEN")
+	dbpassword := os.Getenv("DB_PASSWORD_AIVEN")
+	dbhost := os.Getenv("DB_HOST_AIVEN")
+	dbport := os.Getenv("DB_PORT_AIVEN")
+	dbdbname := os.Getenv("DB_NAME_AIVEN")
+
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", dbuser, dbpassword, dbhost, dbport, dbdbname)
+	// Connect to the MySQL database
+	db, err := sql.Open("mysql", dsn)
+	if err != nil {
+		panic(err)
 	}
 
 	defer db.Close()
@@ -92,11 +109,11 @@ func main() {
 	router.GET("/user/:id/education", educationHandler.GetEducationsByUserID)
 
 	// Start the server
-	port := ":8080"
+	localport := ":8080"
 
-	log.Printf("Server started on port %s", port)
+	log.Printf("Server started on port %s", localport)
 
-	if err := http.ListenAndServe(port, router); err != nil {
+	if err := http.ListenAndServe(localport, router); err != nil {
 		log.Fatalf("failed to start server: %v", err)
 	}
 }
