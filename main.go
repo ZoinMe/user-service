@@ -22,6 +22,7 @@ import (
 	skill3 "github.com/ZoinMe/user-service/stores/skill"
 	user3 "github.com/ZoinMe/user-service/stores/user"
 	userSkill3 "github.com/ZoinMe/user-service/stores/userSkill"
+	"github.com/gin-contrib/cors"
 	"github.com/joho/godotenv"
 
 	"github.com/gin-gonic/gin"
@@ -53,6 +54,13 @@ func main() {
 
 	// Set up Gin router
 	router := gin.Default()
+
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:3000"}, // Allow requests from your frontend domain
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
+		AllowCredentials: true,
+	}))
 
 	// Initialize repositories
 	userRepo := user3.NewUserRepository(db)
@@ -109,11 +117,11 @@ func main() {
 	router.GET("/user/:id/education", educationHandler.GetEducationsByUserID)
 
 	// Start the server
-	localport := ":8080"
+	localport := os.Getenv("PORT")
 
 	log.Printf("Server started on port %s", localport)
 
-	if err := http.ListenAndServe(localport, router); err != nil {
+	if err := http.ListenAndServe(fmt.Sprintf(":%s", localport), router); err != nil {
 		log.Fatalf("failed to start server: %v", err)
 	}
 }
