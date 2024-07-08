@@ -62,11 +62,7 @@ func (h *ExperienceHandler) CreateExperience(c *gin.Context) {
 }
 
 func (h *ExperienceHandler) UpdateExperience(c *gin.Context) {
-	experienceID, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid experience ID"})
-		return
-	}
+	experienceID := c.Param("id")
 
 	var updatedExperience model.Experience
 	if err := c.ShouldBindJSON(&updatedExperience); err != nil {
@@ -74,7 +70,7 @@ func (h *ExperienceHandler) UpdateExperience(c *gin.Context) {
 		return
 	}
 
-	updatedExperience.ID = int64(experienceID)
+	updatedExperience.ID = experienceID
 
 	experience, err := h.experienceService.Update(c.Request.Context(), &updatedExperience)
 	if err != nil {
@@ -104,13 +100,7 @@ func (h *ExperienceHandler) DeleteExperience(c *gin.Context) {
 func (eh *ExperienceHandler) GetExperiencesByUserID(c *gin.Context) {
 	userIDStr := c.Param("id")
 
-	userID, err := strconv.ParseUint(userIDStr, 10, 64)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
-		return
-	}
-
-	experiences, err := eh.experienceService.GetByUserID(c.Request.Context(), uint(userID))
+	experiences, err := eh.experienceService.GetByUserID(c.Request.Context(), userIDStr)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

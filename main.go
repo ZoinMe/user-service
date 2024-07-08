@@ -9,16 +9,19 @@ import (
 
 	education2 "github.com/ZoinMe/user-service/handles/education"
 	experience2 "github.com/ZoinMe/user-service/handles/experience"
+	notification2 "github.com/ZoinMe/user-service/handles/notification"
 	skill2 "github.com/ZoinMe/user-service/handles/skill"
 	user2 "github.com/ZoinMe/user-service/handles/user"
 	userSkill2 "github.com/ZoinMe/user-service/handles/userSkill"
 	"github.com/ZoinMe/user-service/services/education"
 	"github.com/ZoinMe/user-service/services/experience"
+	"github.com/ZoinMe/user-service/services/notification"
 	"github.com/ZoinMe/user-service/services/skill"
 	"github.com/ZoinMe/user-service/services/user"
 	"github.com/ZoinMe/user-service/services/userSkill"
 	education3 "github.com/ZoinMe/user-service/stores/education"
 	experience3 "github.com/ZoinMe/user-service/stores/experience"
+	notification3 "github.com/ZoinMe/user-service/stores/notification"
 	skill3 "github.com/ZoinMe/user-service/stores/skill"
 	user3 "github.com/ZoinMe/user-service/stores/user"
 	userSkill3 "github.com/ZoinMe/user-service/stores/userSkill"
@@ -68,6 +71,7 @@ func main() {
 	userSkillRepo := userSkill3.NewUserSkillRepository(db)
 	experienceRepo := experience3.NewExperienceRepository(db)
 	educationRepo := education3.NewEducationRepository(db)
+	notificationRepo := notification3.NewNotificationRepository(db)
 
 	// Initialize services
 	userService := user.NewUserService(userRepo)
@@ -75,6 +79,7 @@ func main() {
 	userSkillService := userSkill.NewUserSkillService(userSkillRepo)
 	experienceService := experience.NewExperienceService(experienceRepo)
 	educationService := education.NewEducationService(educationRepo)
+	notificationService := notification.NewNotificationService(notificationRepo)
 
 	// Initialize handlers
 	userHandler := user2.NewUserHandler(userService)
@@ -82,6 +87,7 @@ func main() {
 	userSkillHandler := userSkill2.NewUserSkillHandler(userSkillService)
 	experienceHandler := experience2.NewExperienceHandler(experienceService)
 	educationHandler := education2.NewEducationHandler(educationService)
+	notificationHandler := notification2.NewNotificationHandler(notificationService)
 
 	// Define APIs for each entity
 	router.GET("/user", userHandler.GetUsers)
@@ -115,6 +121,12 @@ func main() {
 	router.PUT("/education/:id", educationHandler.UpdateEducation)
 	router.DELETE("/education/:id", educationHandler.DeleteEducation)
 	router.GET("/user/:id/education", educationHandler.GetEducationsByUserID)
+
+	router.GET("/user/:id/notification/:id", notificationHandler.GetNotificationByID)
+	router.POST("/user/:id/notification", notificationHandler.CreateNotification)
+	router.PUT("/user/:id/notification/:id", notificationHandler.UpdateNotification)
+	router.DELETE("/user/:id/notification/:id", notificationHandler.DeleteNotification)
+	router.GET("/user/:id/notification", notificationHandler.GetNotificationsByUserID)
 
 	// Start the server
 	localport := os.Getenv("PORT")

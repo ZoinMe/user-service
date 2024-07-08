@@ -62,11 +62,7 @@ func (h *EducationHandler) CreateEducation(c *gin.Context) {
 }
 
 func (h *EducationHandler) UpdateEducation(c *gin.Context) {
-	educationID, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid education ID"})
-		return
-	}
+	educationID := c.Param("id")
 
 	var updatedEducation model.Education
 
@@ -75,7 +71,7 @@ func (h *EducationHandler) UpdateEducation(c *gin.Context) {
 		return
 	}
 
-	updatedEducation.ID = int64(educationID)
+	updatedEducation.ID = educationID
 
 	education, err := h.educationService.Update(c.Request.Context(), &updatedEducation)
 	if err != nil {
@@ -105,13 +101,7 @@ func (h *EducationHandler) DeleteEducation(c *gin.Context) {
 func (eh *EducationHandler) GetEducationsByUserID(c *gin.Context) {
 	userIDStr := c.Param("id")
 
-	userID, err := strconv.ParseUint(userIDStr, 10, 64)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
-		return
-	}
-
-	educations, err := eh.educationService.GetByUserID(c.Request.Context(), uint(userID))
+	educations, err := eh.educationService.GetByUserID(c.Request.Context(), userIDStr)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

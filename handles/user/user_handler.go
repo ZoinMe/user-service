@@ -2,11 +2,11 @@ package user
 
 import (
 	"fmt"
-	"github.com/ZoinMe/user-service/services"
 	"net/http"
 	"strconv"
 
 	"github.com/ZoinMe/user-service/model"
+	"github.com/ZoinMe/user-service/services"
 	"github.com/gin-gonic/gin"
 )
 
@@ -29,13 +29,9 @@ func (h *UserHandler) GetUsers(c *gin.Context) {
 }
 
 func (h *UserHandler) GetUserByID(c *gin.Context) {
-	userID, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
-		return
-	}
+	userID := c.Param("id")
 
-	user, err := h.userService.GetByID(c.Request.Context(), uint(userID))
+	user, err := h.userService.GetByID(c.Request.Context(), userID)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("User with ID %d not found", userID)})
 		return
@@ -61,11 +57,7 @@ func (h *UserHandler) CreateUser(c *gin.Context) {
 }
 
 func (h *UserHandler) UpdateUser(c *gin.Context) {
-	userID, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
-		return
-	}
+	userID := c.Param("id")
 
 	var updatedUser model.User
 	if err := c.ShouldBindJSON(&updatedUser); err != nil {
@@ -73,7 +65,7 @@ func (h *UserHandler) UpdateUser(c *gin.Context) {
 		return
 	}
 
-	updatedUser.ID = int64(userID)
+	updatedUser.ID = userID
 
 	user, err := h.userService.Update(c.Request.Context(), &updatedUser)
 	if err != nil {

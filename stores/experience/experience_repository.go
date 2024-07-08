@@ -83,12 +83,10 @@ func (er *ExperienceRepository) GetByID(ctx context.Context, id uint) (*model.Ex
 func (er *ExperienceRepository) Create(ctx context.Context, experience *model.Experience) (*model.Experience, error) {
 	query := "INSERT INTO experiences (company_logo, designation, company, from_date, to_date, description, user_id) VALUES (?, ?, ?, ?, ?, ?, ?)"
 
-	result, err := er.DB.ExecContext(ctx, query, experience.CompanyLogo, experience.Designation, experience.Company, experience.FromDate, experience.ToDate, experience.Description, experience.UserID)
+	_, err := er.DB.ExecContext(ctx, query, experience.CompanyLogo, experience.Designation, experience.Company, experience.FromDate, experience.ToDate, experience.Description, experience.UserID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create experience: %v", err)
 	}
-
-	experience.ID, _ = result.LastInsertId()
 
 	return experience, nil
 }
@@ -115,7 +113,7 @@ func (er *ExperienceRepository) Delete(ctx context.Context, id uint) error {
 	return nil
 }
 
-func (er *ExperienceRepository) GetByUserID(ctx context.Context, userID uint) ([]*model.Experience, error) {
+func (er *ExperienceRepository) GetByUserID(ctx context.Context, userID string) ([]*model.Experience, error) {
 	query := "SELECT id, company_logo, designation, company, from_date, to_date, description, user_id FROM experiences WHERE user_id = ?"
 
 	rows, err := er.DB.QueryContext(ctx, query, userID)

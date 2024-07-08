@@ -61,7 +61,7 @@ func (es *educationService) Delete(ctx context.Context, id uint) error {
 	return nil
 }
 
-func (es *educationService) GetByUserID(ctx context.Context, userID uint) ([]*model.Education, error) {
+func (es *educationService) GetByUserID(ctx context.Context, userID string) ([]*model.Education, error) {
 	educations, err := es.educationRepository.GetByUserID(ctx, userID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get educations by user ID: %v", err)

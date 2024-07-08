@@ -69,13 +69,10 @@ func (usr *UserSkillRepository) GetByID(ctx context.Context, id uint) (*model.Us
 func (usr *UserSkillRepository) Create(ctx context.Context, userSkill *model.UserSkill) (*model.UserSkill, error) {
 	query := "INSERT INTO user_skills (user_id, skill_id) VALUES (?, ?)"
 
-	result, err := usr.DB.ExecContext(ctx, query, userSkill.UserID, userSkill.SkillID)
+	_, err := usr.DB.ExecContext(ctx, query, userSkill.UserID, userSkill.SkillID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create user skill: %v", err)
 	}
-
-	userSkillID, _ := result.LastInsertId()
-	userSkill.ID = userSkillID
 
 	return userSkill, nil
 }
@@ -102,7 +99,7 @@ func (usr *UserSkillRepository) Delete(ctx context.Context, id uint) error {
 	return nil
 }
 
-func (usr *UserSkillRepository) GetByUserID(ctx context.Context, userID uint) ([]*model.UserSkill, error) {
+func (usr *UserSkillRepository) GetByUserID(ctx context.Context, userID string) ([]*model.UserSkill, error) {
 	query := "SELECT id, user_id, skill_id FROM user_skills WHERE user_id = ?"
 
 	rows, err := usr.DB.QueryContext(ctx, query, userID)

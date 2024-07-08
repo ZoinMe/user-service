@@ -81,12 +81,10 @@ func (er *EducationRepository) GetByID(ctx context.Context, id uint) (*model.Edu
 func (er *EducationRepository) Create(ctx context.Context, education *model.Education) (*model.Education, error) {
 	query := "INSERT INTO educations (university_logo, university_name, degree, from_date, to_date, user_id) VALUES (?, ?, ?, ?, ?, ?)"
 
-	result, err := er.DB.ExecContext(ctx, query, education.UniversityLogo, education.UniversityName, education.Degree, education.FromDate, education.ToDate, education.UserID)
+	_, err := er.DB.ExecContext(ctx, query, education.UniversityLogo, education.UniversityName, education.Degree, education.FromDate, education.ToDate, education.UserID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create education: %v", err)
 	}
-
-	education.ID, _ = result.LastInsertId()
 
 	return education, nil
 }
@@ -113,7 +111,7 @@ func (er *EducationRepository) Delete(ctx context.Context, id uint) error {
 	return nil
 }
 
-func (er *EducationRepository) GetByUserID(ctx context.Context, userID uint) ([]*model.Education, error) {
+func (er *EducationRepository) GetByUserID(ctx context.Context, userID string) ([]*model.Education, error) {
 	query := "SELECT id, university_logo, university_name, degree, from_date, to_date, user_id FROM educations WHERE user_id = ?"
 
 	rows, err := er.DB.QueryContext(ctx, query, userID)

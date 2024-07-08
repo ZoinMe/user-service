@@ -61,7 +61,7 @@ func (es *ExperienceService) Delete(ctx context.Context, id uint) error {
 	return nil
 }
 
-func (es *ExperienceService) GetByUserID(ctx context.Context, userID uint) ([]*model.Experience, error) {
+func (es *ExperienceService) GetByUserID(ctx context.Context, userID string) ([]*model.Experience, error) {
 	experiences, err := es.experienceRepository.GetByUserID(ctx, userID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get experiences by user ID: %v", err)

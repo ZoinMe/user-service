@@ -61,12 +61,7 @@ func (h *UserSkillHandler) CreateUserSkill(c *gin.Context) {
 }
 
 func (h *UserSkillHandler) UpdateUserSkill(c *gin.Context) {
-	userSkillID, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user skill ID"})
-		return
-	}
-
+	userSkillID:=c.Param("id")
 	var updatedUserSkill model.UserSkill
 
 	if err := c.ShouldBindJSON(&updatedUserSkill); err != nil {
@@ -74,7 +69,7 @@ func (h *UserSkillHandler) UpdateUserSkill(c *gin.Context) {
 		return
 	}
 
-	updatedUserSkill.ID = int64(userSkillID)
+	updatedUserSkill.ID = userSkillID
 
 	userSkill, err := h.userSkillService.Update(c.Request.Context(), &updatedUserSkill)
 	if err != nil {
@@ -104,13 +99,7 @@ func (h *UserSkillHandler) DeleteUserSkill(c *gin.Context) {
 func (ush *UserSkillHandler) GetUserSkillsByUserID(c *gin.Context) {
 	userIDStr := c.Param("id")
 
-	userID, err := strconv.ParseUint(userIDStr, 10, 64)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
-		return
-	}
-
-	userSkills, err := ush.userSkillService.GetByUserID(c.Request.Context(), uint(userID))
+	userSkills, err := ush.userSkillService.GetByUserID(c.Request.Context(), userIDStr)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
